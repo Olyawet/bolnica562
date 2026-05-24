@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Монитор ЭКГ — Кардиоцентр</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="no-copy">
+  <div class="monitor no-select">
+    <header class="monitor__header">
+      <div class="monitor__brand">
+        <span class="monitor__logo">♥</span>
+        <div>
+          <h1>КардиоМонитор</h1>
+          <p class="monitor__subtitle">Система непрерывного ЭКГ-наблюдения</p>
+        </div>
+      </div>
+      <div class="monitor__clock" id="clock">--:--:--</div>
+      <div class="monitor__session">
+        <span>Сессия</span>
+        <strong id="sessionId">—</strong>
+      </div>
+    </header>
+
+    <main class="monitor__body">
+      <aside class="patient-panel">
+        <div class="patient-panel__nav">
+          <button type="button" class="nav-btn" id="btnPrev" title="Предыдущий пациент" aria-label="Предыдущий пациент">◀</button>
+          <span class="patient-panel__counter" id="patientCounter">Пациент #1</span>
+          <button type="button" class="nav-btn" id="btnNext" title="Следующий пациент" aria-label="Следующий пациент">▶</button>
+        </div>
+
+        <div class="patient-card">
+          <div class="patient-card__avatar" id="patientAvatar">П</div>
+          <h2 class="patient-card__name" id="patientName">—</h2>
+          <p class="patient-card__fio-short" id="patientFioShort">—</p>
+
+          <dl class="patient-details">
+            <div class="patient-details__row">
+              <dt>Дата рождения</dt>
+              <dd id="birthDate">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Возраст</dt>
+              <dd id="age">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Пол</dt>
+              <dd id="gender">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>ID карты</dt>
+              <dd id="cardId">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Палата / койка</dt>
+              <dd id="ward">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Группа крови</dt>
+              <dd id="bloodType">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Аллергии</dt>
+              <dd id="allergies">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Жалобы</dt>
+              <dd id="complaints">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Рост / вес / ИМТ</dt>
+              <dd id="anthropometry">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Сопутствующие</dt>
+              <dd id="comorbidities">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Постоянная терапия</dt>
+              <dd id="chronicMeds">—</dd>
+            </div>
+            <div class="patient-details__row">
+              <dt>Курение / алкоголь</dt>
+              <dd id="habits">—</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="diagnosis-box" id="diagnosisBox">
+          <span class="diagnosis-box__label">Предварительный случай</span>
+          <p class="diagnosis-box__text" id="diagnosis">—</p>
+          <span class="diagnosis-box__severity" id="severity">—</span>
+        </div>
+
+        <div class="doctor-panel">
+          <div class="doctor-panel__head">
+            <h3 class="doctor-panel__title">Действия врача</h3>
+            <span class="live-badge" id="liveBadge">● LIVE</span>
+          </div>
+          <p class="doctor-panel__hint">Показатели меняются в реальном времени. Препараты без блокировки — при ошибке эффекта может не быть.</p>
+          <div class="utility-actions utility-actions--time">
+            <button type="button" class="util-btn" id="btnWaitMin">⏱ 1 мин</button>
+            <button type="button" class="util-btn" id="btnWaitHour">⏱ 1 час</button>
+            <button type="button" class="util-btn" id="btnWaitDay">⏳ Сутки</button>
+          </div>
+          <div class="utility-actions">
+            <button type="button" class="util-btn" id="btnVisualExam">🔍 Осмотр</button>
+            <button type="button" class="util-btn" id="btnMeasureGlucose">🩸 Глюкоза</button>
+            <button type="button" class="util-btn" id="btnHandbook">📖 Справочник</button>
+          </div>
+          <div class="utility-actions">
+            <button type="button" class="util-btn util-btn--good" id="btnRecGood">✓ Верные рекомендации</button>
+            <button type="button" class="util-btn util-btn--bad" id="btnRecBad">✗ Неверные рекомендации</button>
+          </div>
+          <div class="utility-actions">
+            <button type="button" class="util-btn" id="btnSurgeryPci">🏥 Стентирование</button>
+            <button type="button" class="util-btn" id="btnSurgeryPacemaker">🔋 ЭКС</button>
+            <button type="button" class="util-btn" id="btnWardRound">🩺 Обход палаты</button>
+          </div>
+          <div class="doctor-actions" id="doctorActions"></div>
+          <div class="event-log" id="eventLog" aria-live="polite">
+            <div class="event-log__placeholder">Журнал событий пуст. Ожидание динамики…</div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="ecg-section">
+        <div class="care-track" id="careTrack">
+          <span id="carePhaseLabel">Отделение: реанимация</span>
+          <span id="recoveryScoreLabel">Восстановление: —</span>
+        </div>
+
+        <div class="live-status" id="liveStatus">
+          <span class="live-status__dot"></span>
+          <span id="liveStatusText">Мониторинг: стабильное состояние</span>
+        </div>
+
+        <div class="vitals-bar">
+          <div class="vital" data-vital="hr">
+            <span class="vital__label">ЧСС</span>
+            <span class="vital__value" id="hr">—</span>
+            <span class="vital__unit">уд/мин</span>
+          </div>
+          <div class="vital" data-vital="rr">
+            <span class="vital__label">ЧДД</span>
+            <span class="vital__value" id="rr">—</span>
+            <span class="vital__unit">/мин</span>
+          </div>
+          <div class="vital" data-vital="spo2">
+            <span class="vital__label">SpO₂</span>
+            <span class="vital__value" id="spo2">—</span>
+            <span class="vital__unit">%</span>
+          </div>
+          <div class="vital" data-vital="bp">
+            <span class="vital__label">АД</span>
+            <span class="vital__value" id="bp">—</span>
+            <span class="vital__unit">мм рт.ст.</span>
+          </div>
+          <div class="vital" data-vital="temp">
+            <span class="vital__label">t°</span>
+            <span class="vital__value" id="temp">—</span>
+            <span class="vital__unit">°C</span>
+          </div>
+          <div class="vital vital--rhythm">
+            <span class="vital__label">Ритм</span>
+            <span class="vital__value vital__value--small" id="rhythmLabel">—</span>
+          </div>
+        </div>
+
+        <div class="vitals-bar vitals-bar--labs">
+          <div class="vital" data-vital="gcs">
+            <span class="vital__label">ШКГ (GCS)</span>
+            <span class="vital__value" id="gcs">—</span>
+            <span class="vital__unit" id="gcsDetail">E-V-M</span>
+          </div>
+          <div class="vital" data-vital="consciousness">
+            <span class="vital__label">Сознание</span>
+            <span class="vital__value vital__value--small" id="consciousnessLabel">—</span>
+          </div>
+          <div class="vital" data-vital="map">
+            <span class="vital__label">САД (MAP)</span>
+            <span class="vital__value" id="map">—</span>
+            <span class="vital__unit">мм рт.ст.</span>
+          </div>
+          <div class="vital" data-vital="glucose">
+            <span class="vital__label">Глюкоза</span>
+            <span class="vital__value" id="glucose">—</span>
+            <span class="vital__unit" id="glucoseHint">не измерена</span>
+          </div>
+          <div class="vital" data-vital="lactate">
+            <span class="vital__label">Лактат</span>
+            <span class="vital__value" id="lactate">—</span>
+            <span class="vital__unit">ммоль/л</span>
+          </div>
+          <div class="vital" data-vital="hb">
+            <span class="vital__label">Hb</span>
+            <span class="vital__value" id="hb">—</span>
+            <span class="vital__unit">г/л</span>
+          </div>
+          <div class="vital" data-vital="rso2">
+            <span class="vital__label">rSO₂ мозг</span>
+            <span class="vital__value" id="rso2">—</span>
+            <span class="vital__unit">%</span>
+          </div>
+          <div class="vital vital--compact" data-vital="electrolytes">
+            <span class="vital__label">K⁺ / Na⁺ / креат.</span>
+            <span class="vital__value vital__value--small" id="electrolytes">—</span>
+          </div>
+        </div>
+
+        <div class="brain-panel" id="brainPanel">
+          <div class="brain-panel__head">
+            <h3>Неврологический статус</h3>
+            <span class="brain-panel__timer" id="hypoxiaTimer">Ишемия мозга: 0:00</span>
+          </div>
+          <div class="hypoxia-bar">
+            <div class="hypoxia-bar__fill" id="hypoxiaBarFill"></div>
+          </div>
+          <p class="brain-panel__hint" id="brainHint">
+            Критическая гипоксия коры: необратимые изменения через 4–7 мин без адекватной перфузии и O₂.
+          </p>
+          <p class="brain-panel__status" id="brainStatus">—</p>
+        </div>
+
+        <div class="ecg-display" id="ecgDisplayMain">
+          <div class="ecg-display__lead-label">II</div>
+          <canvas id="ecgCanvas" aria-label="Электрокардиограмма"></canvas>
+          <div class="ecg-display__sweep"></div>
+        </div>
+
+        <div class="ecg-display ecg-display--secondary">
+          <div class="ecg-display__lead-label">V1</div>
+          <canvas id="ecgCanvas2" aria-label="Электрокардиограмма отведение V1"></canvas>
+          <div class="ecg-display__sweep ecg-display__sweep--secondary"></div>
+        </div>
+
+        <footer class="ecg-footer">
+          <span id="ecgStatus">Запись…</span>
+          <span class="ecg-footer__gain">Усиление: 10 мм/мВ · Скорость: 25 мм/с</span>
+          <span id="lastUpdate">—</span>
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="handbookModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__box modal__box--wide">
+      <header class="modal__header">
+        <h2>Справочник врача</h2>
+        <button type="button" class="modal__close" data-close-modal aria-label="Закрыть">×</button>
+      </header>
+      <div class="modal__body handbook-body" id="handbookContent"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="examModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__box modal__box--wide">
+      <header class="modal__header">
+        <h2>Визуальный осмотр</h2>
+        <button type="button" class="modal__close" data-close-modal aria-label="Закрыть">×</button>
+      </header>
+      <div class="modal__body" id="examContent"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="surgeryModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__box modal__box--wide">
+      <header class="modal__header">
+        <h2 id="surgeryTitle">Операция</h2>
+        <button type="button" class="modal__close" data-close-modal aria-label="Закрыть">×</button>
+      </header>
+      <div class="modal__body">
+        <p class="surgery-hint" id="surgeryHint">Выполняйте этапы строго по алгоритму.</p>
+        <p id="surgeryStepLabel">—</p>
+        <div class="surgery-steps" id="surgerySteps"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="clinical.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

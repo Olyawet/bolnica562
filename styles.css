@@ -1,0 +1,944 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-deep: #0a0e14;
+  --bg-panel: #111820;
+  --bg-card: #161f2a;
+  --border: #243044;
+  --text: #c8d4e0;
+  --text-dim: #6b7d94;
+  --accent: #00e676;
+  --accent-dim: #00a855;
+  --warning: #ffab00;
+  --danger: #ff5252;
+  --info: #40c4ff;
+  --ecg-line: #00ff88;
+  --ecg-glow: rgba(0, 255, 136, 0.35);
+  --grid: rgba(0, 255, 136, 0.06);
+  --font: "Segoe UI", "SF Pro Display", system-ui, sans-serif;
+  --mono: "Cascadia Code", "Consolas", monospace;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-deep);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.no-copy,
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.no-copy input,
+.no-copy textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 230, 118, 0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(64, 196, 255, 0.05), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.monitor {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 1.5rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.monitor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.monitor__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.monitor__logo {
+  font-size: 2rem;
+  color: var(--danger);
+  filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.5));
+  animation: pulse-heart 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-heart {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.monitor__brand h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.monitor__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.monitor__clock {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  color: var(--accent);
+  text-shadow: 0 0 12px var(--ecg-glow);
+}
+
+.monitor__session {
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.monitor__session strong {
+  display: block;
+  font-family: var(--mono);
+  color: var(--info);
+  font-size: 0.95rem;
+}
+
+/* Layout */
+.monitor__body {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .monitor__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Patient panel */
+.patient-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.patient-panel__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--accent);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.nav-btn:hover {
+  background: #1e2a3a;
+  border-color: var(--accent-dim);
+}
+
+.nav-btn:active {
+  transform: scale(0.96);
+}
+
+.patient-panel__counter {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.patient-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.patient-card__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a3a2a, #0d2818);
+  border: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.patient-card__name {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+}
+
+.patient-card__fio-short {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.patient-details__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(36, 48, 68, 0.6);
+  font-size: 0.82rem;
+}
+
+.patient-details__row:last-child {
+  border-bottom: none;
+}
+
+.patient-details dt {
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.patient-details dd {
+  text-align: right;
+  font-weight: 500;
+}
+
+/* Diagnosis */
+.diagnosis-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  border-left: 4px solid var(--accent);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.diagnosis-box--warning {
+  border-left-color: var(--warning);
+  background: rgba(255, 171, 0, 0.06);
+}
+
+.diagnosis-box--danger {
+  border-left-color: var(--danger);
+  background: rgba(255, 82, 82, 0.08);
+}
+
+.diagnosis-box--good {
+  border-left-color: var(--accent);
+}
+
+.diagnosis-box__label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.diagnosis-box__text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+.diagnosis-box__severity {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(0, 230, 118, 0.15);
+  color: var(--accent);
+}
+
+.diagnosis-box--warning .diagnosis-box__severity {
+  background: rgba(255, 171, 0, 0.2);
+  color: var(--warning);
+}
+
+.diagnosis-box--danger .diagnosis-box__severity {
+  background: rgba(255, 82, 82, 0.2);
+  color: var(--danger);
+}
+
+/* ECG section */
+.ecg-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.vitals-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 0.5rem;
+}
+
+.vitals-bar--labs {
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+}
+
+.vital--compact .vital__value--small {
+  font-size: 0.72rem;
+}
+
+.vital {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  text-align: center;
+}
+
+.vital__label {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.vital__value {
+  display: block;
+  font-family: var(--mono);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--ecg-glow);
+  line-height: 1.2;
+}
+
+.vital__value--small {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.vital__unit {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+
+.vital--alarm .vital__value {
+  color: var(--danger);
+  animation: blink-alarm 0.8s step-end infinite;
+}
+
+.vital--warn .vital__value {
+  color: var(--warning);
+}
+
+@keyframes blink-alarm {
+  50% { opacity: 0.4; }
+}
+
+/* ECG canvas */
+.ecg-display {
+  position: relative;
+  background: #050a08;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 160px;
+}
+
+.ecg-display--secondary {
+  height: 100px;
+  opacity: 0.85;
+}
+
+.ecg-display__lead-label {
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  z-index: 2;
+  opacity: 0.8;
+}
+
+.ecg-display canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ecg-display__sweep {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(90deg, transparent, var(--ecg-line), transparent);
+  box-shadow: 0 0 12px var(--ecg-glow);
+  opacity: 0.5;
+  pointer-events: none;
+  animation: sweep 4s linear infinite;
+}
+
+.ecg-display__sweep--secondary {
+  animation-duration: 4.2s;
+}
+
+@keyframes sweep {
+  0% { left: 0; }
+  100% { left: 100%; }
+}
+
+.ecg-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  padding: 0.25rem 0;
+}
+
+#ecgStatus {
+  color: var(--accent);
+}
+
+#ecgStatus.alarm {
+  color: var(--danger);
+}
+
+/* Care track */
+.care-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.78rem;
+}
+
+.care-track span {
+  font-family: var(--mono);
+}
+
+#recoveryScoreLabel {
+  color: var(--accent);
+}
+
+.utility-actions--time {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.util-btn--good {
+  border-color: rgba(0, 230, 118, 0.4);
+  color: var(--accent);
+}
+
+.util-btn--bad {
+  border-color: rgba(255, 82, 82, 0.4);
+  color: var(--danger);
+}
+
+.exam-finding strong {
+  color: var(--info);
+  margin-right: 0.35rem;
+}
+
+.surgery-hint {
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+}
+
+.surgery-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.surgery-step-btn {
+  padding: 0.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #121a24;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.surgery-step-btn:hover {
+  border-color: var(--info);
+}
+
+/* Live status */
+.live-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.live-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.live-status--warn {
+  border-color: var(--warning);
+  background: rgba(255, 171, 0, 0.06);
+}
+
+.live-status--warn .live-status__dot {
+  background: var(--warning);
+  box-shadow: 0 0 8px var(--warning);
+}
+
+.live-status--danger {
+  border-color: var(--danger);
+  background: rgba(255, 82, 82, 0.1);
+  animation: shake-bar 0.4s ease;
+}
+
+.live-status--danger .live-status__dot {
+  background: var(--danger);
+  box-shadow: 0 0 10px var(--danger);
+  animation: blink-alarm 0.5s step-end infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shake-bar {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.vital--flash-up .vital__value {
+  animation: flash-up 0.6s ease;
+}
+
+.vital--flash-down .vital__value {
+  animation: flash-down 0.6s ease;
+}
+
+@keyframes flash-up {
+  0%, 100% { color: var(--accent); }
+  40% { color: var(--info); transform: scale(1.08); }
+}
+
+@keyframes flash-down {
+  0%, 100% { color: var(--accent); }
+  40% { color: var(--danger); transform: scale(1.1); }
+}
+
+/* Doctor panel */
+.doctor-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 480px;
+}
+
+.doctor-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.doctor-panel__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.live-badge {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--danger);
+  animation: blink-alarm 1.2s step-end infinite;
+}
+
+.doctor-panel__hint {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+}
+
+.utility-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.util-btn {
+  padding: 0.4rem 0.45rem;
+  font-size: 0.65rem;
+  line-height: 1.2;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #0f1822;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.util-btn:hover {
+  background: #1a2838;
+  border-color: var(--accent-dim);
+}
+
+.util-btn--info {
+  border-color: rgba(64, 196, 255, 0.4);
+  color: var(--info);
+}
+
+.doctor-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.35rem;
+}
+
+@media (min-width: 1100px) {
+  .doctor-actions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.doc-btn {
+  padding: 0.45rem 0.5rem;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #121a24;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.doc-btn:hover:not(:disabled) {
+  background: #1a2838;
+  border-color: var(--info);
+}
+
+.doc-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.doc-btn--active {
+  border-color: var(--info);
+  background: rgba(64, 196, 255, 0.1);
+}
+
+.event-log {
+  flex: 1;
+  min-height: 72px;
+  max-height: 110px;
+  overflow-y: auto;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  background: #0a1018;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+}
+
+.event-log__placeholder {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.log-entry {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(36, 48, 68, 0.4);
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-entry time {
+  color: var(--text-dim);
+  margin-right: 0.35rem;
+}
+
+.log-entry--good { color: var(--accent); }
+.log-entry--warn { color: var(--warning); }
+.log-entry--bad { color: var(--danger); }
+.log-entry--info { color: var(--info); }
+.log-entry--neutral { color: var(--text-dim); }
+
+/* Brain / consciousness */
+.brain-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  border-left: 4px solid var(--info);
+}
+
+.brain-panel--warn {
+  border-left-color: var(--warning);
+  background: rgba(255, 171, 0, 0.05);
+}
+
+.brain-panel--danger {
+  border-left-color: var(--danger);
+  background: rgba(255, 82, 82, 0.08);
+}
+
+.brain-panel--death {
+  border-left-color: #888;
+  background: rgba(80, 80, 80, 0.15);
+}
+
+.brain-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.brain-panel__head h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.brain-panel__timer {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--info);
+}
+
+.brain-panel--danger .brain-panel__timer {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.hypoxia-bar {
+  height: 6px;
+  background: #1a2433;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.hypoxia-bar__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--warning), var(--danger));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.brain-panel__hint {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+}
+
+.brain-panel__status {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.monitor--patient-deceased .ecg-display canvas {
+  opacity: 0.35;
+  filter: grayscale(0.9);
+}
+
+.death-banner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.death-banner span {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #999;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 2px solid #666;
+  padding: 0.5rem 1rem;
+}
+
+.patient-card--deceased .patient-card__avatar {
+  border-color: #666;
+  color: #888;
+  background: #1a1a1a;
+}
+
+.monitor--frozen .live-badge {
+  color: var(--text-dim);
+  animation: none;
+}
+
+/* Modal */
+.modal[hidden] {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.modal__box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal__box--wide {
+  max-width: 560px;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal__header h2 {
+  font-size: 0.95rem;
+}
+
+.modal__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal__close:hover {
+  color: var(--text);
+}
+
+.modal__body {
+  padding: 1rem;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.handbook-body h3 {
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin: 0.75rem 0 0.35rem;
+}
+
+.handbook-body h3:first-child {
+  margin-top: 0;
+}
+
+.handbook-body ul {
+  margin: 0.25rem 0 0.5rem 1rem;
+  color: var(--text-dim);
+}
+
+.handbook-body li {
+  margin-bottom: 0.25rem;
+}
+
+.exam-finding {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(36, 48, 68, 0.5);
+}
+
+.exam-finding:last-child {
+  border-bottom: none;
+}
